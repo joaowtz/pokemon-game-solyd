@@ -14,9 +14,9 @@ def escolher_pokemon_inicial(player):
     print('2 - {}'.format(charmander.nome))
     print('3 - {}'.format(squirtle.nome))
 
-    while True:
+    while True:  
+        escolha = input('Digite sua escolha (1, 2 ou 3): ').strip()
         print('----------------------------------------------')
-        escolha = input('Digite sua escolha (1, 2 ou 3):')
         if escolha == '1':
             player.capturar(pikachu)
             print('Voce escolheu {} como seu pokemon inicial!'.format(pikachu.nome))
@@ -49,50 +49,69 @@ def carregar_jogo():
     try:
         with open('database.db', 'rb') as arquivo:
             player = pickle.load(arquivo)
-            print('Jogo carregado com sucesso!')
-            return player
+            if player:
+                print('Jogo carregado com sucesso!')
+                time.sleep(1)
+                print('Seja bem-vindo de volta, {}!'.format(player.nome))
+                time.sleep(1)
+                return player
+            else:
+                print('Nenhum jogo salvo encontrado. Iniciando um novo jogo...')
+                return None
     except Exception as error:
         print('Nenhum jogo salvo encontrado. Iniciando um novo jogo...')
+        return None
+
+def apagar_jogo():
+    try:
+        with open('database.db', 'wb') as arquivo:
+            pickle.dump(None, arquivo)
+            print('Jogo apagado com sucesso!')
+    except Exception as error:
+        print('Erro ao apagar o jogo: {}'.format(error))
         
 if __name__ == '__main__':
 
-    player = carregar_jogo()
+    print('----------------------------------------------')
+    print('Bem-vindo ao jogo Pokémon de terminal!')
+    print('----------------------------------------------')
 
-print('----------------------------------------------')
-print('Bem-vindo ao jogo Pokémon de terminal!')
-print('----------------------------------------------')
+
+player = carregar_jogo()
 
 if not player:
-        nickname = input('Digite seu nickname:')
-        player = Player(nickname)
-        print('Olá {}, seja bem-vindo ao mundo Pokémon!'.format(nickname))
+    nickname = input('Digite seu nickname: ')
+    player = Player(nickname)
+    print('Olá {}, seja bem-vindo ao mundo Pokémon!'.format(nickname))
+    
+    if player.pokemons:
+        print('Vejo que você já possui pokemons!')
+        time.sleep(1)
+        player.mostrar_pokemons()
+    else:
+        print('-----------------------------------------------')
+        print('Você ainda não possui pokemons, vamos escolher um!')
+        time.sleep(1)
+        escolher_pokemon_inicial(player)
+        time.sleep(1)
 
-        if player.pokemons:
-            print('Vejo que você já possui pokemons!')
-            time.sleep(1)
-            player.mostrar_pokemons()
-        else:
-            print('-----------------------------------------------')
-            print('Você ainda não possui pokemons, vamos escolher um!')
-            time.sleep(1)
-            escolher_pokemon_inicial(player)
-            time.sleep(1)
-
-        escolha = input('Agora que voce está pronto, tem uma pessoa te encarando! OBS: com más intenções... Deseja batalhar com ele? (s/n)')
+    while True:
+        escolha = input('Agora que você está pronto, tem uma pessoa te encarando! OBS: com más intenções... Deseja batalhar com ele? (s/n): ').strip().lower()
         if escolha == 's':
             inimigo1 = Enemy(pokemons=[PokemonAgua('squirtle', level=5), PokemonFogo('growlithe', level=3)])
             time.sleep(1)
             print('----------------------------------------------') 
             print('Legal, ele aceitou a batalha!')
-            print('Seu inimigo é um treinador chamado {} e ele possui os seguintes pokemons:'.format(inimigo1.nome))
+            print('Seu inimigo é um treinador chamado {}, Boa sorte!'.format(inimigo1.nome))
             time.sleep(1)
             print('----------------------------------------------')
-            inimigo1.mostrar_pokemons()
-            print('----------------------------------------------')
             player.batalhar(inimigo1)
-        else:
+            break
+        elif escolha == 'n':
             print('Sábia decisão, mas lembre-se que o mundo Pokémon é cheio de desafios e batalhas!')
-            salvar_jogo(player)
+            break
+        else:
+            print('Escolha inválida. Por favor, digite "s" para sim ou "n" para não.')
 
         time.sleep(1)
         print('----------------------------------------------')
@@ -105,7 +124,9 @@ while True:
     print('3 - Mostrar pokemons')
     print('4 - Mostrar dinheiro')
     print('5 - Salvar e sair do jogo')
-    escolha = input('Digite sua escolha (1, 2, 3, 4 ou 5):')
+    print('6 - Apagar jogo salvo')
+    escolha = input('Digite sua escolha (1, 2, 3, 4, 5 ou 6):').strip()
+    print('----------------------------------------------')
     if escolha == '1':
         player.explorar()
     elif escolha == '2':
@@ -121,7 +142,20 @@ while True:
         print('Obrigado por jogar! Até a próxima!')
         salvar_jogo(player)
         break
+    elif escolha == '6':
+        time.sleep(1)
+        desejar = input('Tem certexa que deseja apagar o jogo salvo? (s/n): ').strip().lower()
+        if desejar == 's':
+            print('Apagando jogo salvo...')
+            time.sleep(1)
+            apagar_jogo()
+            time.sleep(1)
+            print('Saindo do jogo...')
+            time.sleep(1)
+            break
+        else:
+            print('Jogo salvo mantido.')
     else:
-        print('Escolha inválida. Por favor, digite 1, 2, 3, 4 ou 5.')
+        print('Escolha inválida. Por favor, digite 1, 2, 3, 4, 5 ou 6.')
 
 

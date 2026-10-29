@@ -107,7 +107,7 @@ class Player(Pessoa):
             pokemon = random.choice(POKEMONS)
             print('{} encontrou um pokemon selvagem: {}' .format(self, pokemon))
 
-            escolha = input('Deseja capturar o pokemon {}? (s/n)' .format(pokemon))
+            escolha = input('Deseja capturar o pokemon {}? (s/n): ' .format(pokemon)).strip().lower()
             if escolha == 's':
                 if random.random() >= 0.5:
                     self.capturar(pokemon)
